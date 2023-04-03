@@ -1,3 +1,4 @@
+import './sass/index.scss';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import NewsApiService from './js/apiservice';
 
