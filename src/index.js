@@ -107,5 +107,5 @@ async function fetchGallery() {
       )
       .join('');
     galleryCont.insertAdjacentHTML('beforeend', markup);
-    lightbox.refresh();
+    // lightbox.refresh();
   }
