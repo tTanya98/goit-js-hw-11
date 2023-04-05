@@ -1,15 +1,15 @@
 import './sass/index.scss';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import LoadMoreBtn from './js/load-more';
-// import SimpleLightbox from 'simplelightbox';
-// import 'simplelightbox/dist/simple-lightbox.min.css';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 import NewsApiService from './js/apiservice';
 
 const galleryCont = document.querySelector('.gallery');
 const searchForm = document.querySelector('.search-form');
 // const loadMore = document.querySelector('.load-more');
 const newsApiService = new NewsApiService();
-// const gallery = new SimpleLightbox('.gallery a');
+const gallery = new SimpleLightbox('.gallery a');
 const loadMoreBtn = new LoadMoreBtn({
   selector: '.load-more',
   hidden: true,
@@ -51,7 +51,7 @@ newsApiService.resetPage();
     newsApiService.incrementLoadedHits(hits);
     createGalleryMarkup(hits);
     accessQuery(totalHits);
-    // gallery.refresh();
+    gallery.refresh();
 
     if (hits.length === totalHits) {
       loadMoreBtn.hide();
@@ -73,7 +73,7 @@ function onEntry(entries) {
           }
 
           createGalleryMarkup(hits);
-          // gallery.refresh();
+          gallery.refresh();
         })
         .catch(error => {
           console.warn(`${error}`);
@@ -95,7 +95,7 @@ function onLoadMore() {
     }
 
     createGalleryMarkup(hits);
-    // gallery.refresh();
+    gallery.refresh();
   });
 }
 
