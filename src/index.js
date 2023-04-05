@@ -1,123 +1,19 @@
 import './sass/index.scss';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import LoadMoreBtn from './js/load-more';
 // import SimpleLightbox from 'simplelightbox';
 // import 'simplelightbox/dist/simple-lightbox.min.css';
 import NewsApiService from './js/apiservice';
 
-// const formSearch = document.querySelector('.search-form');
-// const galleryCont = document.querySelector('.gallery');
-// const loadMoreBtn = document.querySelector('.load-more');
-
-// let isShown = 0;
-// const newsApiService = new NewsApiService();
-
-// formSearch.addEventListener('submit', onSearch);
-// loadMoreBtn.addEventListener('click', onLoadMore);
-
-// const options = {
-//     rootMargin: '55px',
-//     root: null,
-//     threshold: 0.5,
-// };
-// const observer = new IntersectionObserver(onLoadMore, options);
-
-// function onSearch(e) {
-//     e.preventDefault();
-//     galleryCont.innerHTML = '';
-//     newsApiService.query = e.currentTarget.elements.searchQuery.value.trim();
-//     newsApiService.resetPage();
-
-//     if (newsApiService.query === '') {
-//         Notify.warning('Please, fill the main field!');
-//         return;
-//     }
-
-//     isShown = 0;
-//     fetchGallery();
-//     // onRenderGallery(hits);
-// }
-
-// function onLoadMore() {
-//     newsApiService.incrementPage();
-//     fetchGallery();
-// }
-
-// async function fetchGallery() {
-//    loadMoreBtn.classList.add('is-hidden');
-  
-//     const r = await newsApiService.fetchGallery();
-//     const { hits, total } = r;
-//     isShown += hits.length;
-  
-//     if (!hits.length) {
-//       Notify.failure(
-//         `Sorry, there are no images matching your search query. Please try again.`
-//       );
-//       loadMoreBtn.classList.add('is-hidden');
-//       return;
-//     }
-  
-//     onRenderGallery(hits);
-//     isShown += hits.length;
-  
-//     if (isShown < total) {
-//       Notify.success(`Hooray! We found ${total} images !!!`);
-//       loadMoreBtn.classList.remove('is-hidden');
-//     }
-  
-//     if (isShown >= total) {
-//       Notify.info("We're sorry, but you've reached the end of search results.");
-//     }
-//   }
-  
-//   function onRenderGallery(elements) {
-//     const markup = elements
-//       .map(
-//         ({
-//           webformatURL,
-//           largeImageURL,
-//           tags,
-//           likes,
-//           views,
-//           comments,
-//           downloads,
-//         }) => {
-//           return `<div class="photo-card">
-//       <a href="${largeImageURL}">
-//         <img class="photo-img" src="${webformatURL}" alt="${tags}" loading="lazy" />
-//       </a>
-//       <div class="info">
-//         <p class="info-item">
-//           <b>Likes</b>
-//           ${likes}
-//         </p>
-//         <p class="info-item">
-//           <b>Views</b>
-//           ${views}
-//         </p>
-//         <p class="info-item">
-//           <b>Comments</b>
-//           ${comments}
-//         </p>
-//         <p class="info-item">
-//           <b>Downloads</b>
-//           ${downloads}
-//         </p>
-//       </div>
-//       </div>`;
-//         }
-//       )
-//       .join('');
-//     galleryCont.insertAdjacentHTML('beforeend', markup);
-//   }
 const galleryCont = document.querySelector('.gallery');
 const searchForm = document.querySelector('.search-form');
+// const loadMore = document.querySelector('.load-more');
 const newsApiService = new NewsApiService();
 // const gallery = new SimpleLightbox('.gallery a');
-// // const loadMoreBtn = new LoadMoreBtn({
-// //   selector: '.load-more',
-// //   hidden: true,
-// // });
+const loadMoreBtn = new LoadMoreBtn({
+  selector: '.load-more',
+  hidden: true,
+});
 const optionsForObserver = {
   rootMargin: '250px',
 };
@@ -125,7 +21,7 @@ const observer = new IntersectionObserver(onEntry, optionsForObserver);
 
 // observer.observe(refs.wrapper);
 searchForm.addEventListener('submit', onSearch);
-// loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
+loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
 
 function onSearch(e) {
   e.preventDefault();
@@ -134,8 +30,8 @@ function onSearch(e) {
 
   newsApiService.resetLoadedHits();
 newsApiService.resetPage();
-  // loadMoreBtn.show();
-  // loadMoreBtn.disable();
+  loadMoreBtn.show();
+  loadMoreBtn.disable();
   clearGelleryContainer();
 
   if (!newsApiService.query) {
@@ -144,21 +40,21 @@ newsApiService.resetPage();
 
   newsApiService.fetchImages().then(({ hits, totalHits }) => {
     if (!hits.length) {
-      // setTimeout(() => {
-      //   loadMoreBtn.hide();
-      // }, 1_500);
+      setTimeout(() => {
+        loadMoreBtn.hide();
+      }, 1_500);
 
       return erorrQuery();
     }
 
-    // loadMoreBtn.enable();
+    loadMoreBtn.enable();
     newsApiService.incrementLoadedHits(hits);
     createGalleryMarkup(hits);
     accessQuery(totalHits);
-    gallery.refresh();
+    // gallery.refresh();
 
     if (hits.length === totalHits) {
-      // loadMoreBtn.hide();
+      loadMoreBtn.hide();
       endOfSearch();
     }
   });
@@ -177,7 +73,7 @@ function onEntry(entries) {
           }
 
           createGalleryMarkup(hits);
-          gallery.refresh();
+          // gallery.refresh();
         })
         .catch(error => {
           console.warn(`${error}`);
@@ -186,22 +82,22 @@ function onEntry(entries) {
   });
 }
 
-// function onLoadMore() {
-//   loadMoreBtn.disable();
+function onLoadMore() {
+  loadMoreBtn.disable();
 
-//   imagesApiService.fetchImages().then(({ hits, totalHits }) => {
-//     imagesApiService.incrementLoadedHits(hits);
-//     loadMoreBtn.enable();
+  newsApiService.fetchImages().then(({ hits, totalHits }) => {
+    newsApiService.incrementLoadedHits(hits);
+    loadMoreBtn.enable();
 
-//     if (totalHits <= imagesApiService.loadedHits) {
-//       loadMoreBtn.hide();
-//       endOfSearch();
-//     }
+    if (totalHits <= newsApiService.loadedHits) {
+      loadMoreBtn.hide();
+      endOfSearch();
+    }
 
-//     createGalleryMarkup(hits);
-//     gallery.refresh();
-//   });
-// }
+    createGalleryMarkup(hits);
+    // gallery.refresh();
+  });
+}
 
 function accessQuery(totalHits) {
   Notify.success(`Hooray! We found ${totalHits} images.`);
