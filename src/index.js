@@ -16,10 +16,10 @@ const loadMoreBtn = new LoadMoreBtn({
 const optionsForObserver = {
   rootMargin: '250px',
 };
-const observer = new IntersectionObserver(onEntry, optionsForObserver);
+// const observer = new IntersectionObserver(onEntry, optionsForObserver);
 
 searchForm.addEventListener('submit', onSearch);
-loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
+// loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
 
 function onSearch(e) {
   e.preventDefault();
@@ -54,26 +54,66 @@ newsApiService.resetPage();
 
 }
 
-function onEntry(entries) {
-  entries.forEach(entry => {
-    if (entry.isIntersecting && newsApiService.query) {
+// function onEntry(entries) {
+//   entries.forEach(entry => {
+//     if (entry.isIntersecting && newsApiService.query) {
+//       newsApiService
+//         .fetchImages()
+//         .then(({ hits, totalHits }) => {
+//           newsApiService.incrementLoadedHits(hits);
+//           if (totalHits <= newsApiService.loadedHits) {
+//             endOfSearch();
+//           }
+
+//           createGalleryMarkup(hits);
+//           gallery.refresh();
+//         })
+//         .catch(error => {
+//           console.warn(`${error}`);
+//         });
+//     }
+//   });
+// }
+
+// function onLoadMore() {
+
+//   newsApiService.fetchImages().then(({ hits, totalHits }) => {
+//     newsApiService.incrementLoadedHits(hits);
+
+//     if (totalHits <= newsApiService.loadedHits) {
+//       loadMoreBtn.hide();
+//       endOfSearch();
+//     }
+
+//     createGalleryMarkup(hits);
+//     gallery.refresh();
+//     loadMoreBtn.enable();
+
+//   });
+// }
+
+const onEntry = async function (entries){
+  entries.forEach(async entry => {
+    if (entry.isIntersecting) {
       newsApiService
         .fetchImages()
-        .then(({ hits, totalHits }) => {
+        try {
+          const { hits, totalHits } = await newsApiService.getPhotos();
+          const markup = createGalleryMarkup(hits);
+          galleryCont.insertAdjacentHTML('beforeend', markup);
           newsApiService.incrementLoadedHits(hits);
           if (totalHits <= newsApiService.loadedHits) {
             endOfSearch();
           }
-
-          createGalleryMarkup(hits);
           gallery.refresh();
-        })
-        .catch(error => {
+        }
+        catch (error) {
           console.warn(`${error}`);
-        });
+        }
     }
   });
-}
+} 
+const observer = new IntersectionObserver(onEntry, optionsForObserver);
 
 function onLoadMore() {
 
@@ -92,6 +132,7 @@ function onLoadMore() {
   });
 }
 
+loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
 
 function accessQuery(totalHits) {
   Notify.success(`Hooray! We found ${totalHits} images.`);
@@ -152,3 +193,4 @@ function createGalleryMarkup(images) {
 
   galleryCont.insertAdjacentHTML('beforeend', markup);
 }
+
