@@ -115,21 +115,25 @@ const onEntry = async function (entries){
 } 
 const observer = new IntersectionObserver(onEntry, optionsForObserver);
 
-function onLoadMore() {
+const onLoadMore = async () => {
+  // newsApiService.incrementLoadedHits(hits);
+  newsApiService.incrementPage();
 
-  newsApiService.fetchImages().then(({ hits, totalHits }) => {
-    newsApiService.incrementLoadedHits(hits);
 
+    try {
+      const { hits, totalHits } = await newsApiService.fetchImages();
     if (totalHits <= newsApiService.loadedHits) {
       loadMoreBtn.hide();
       endOfSearch();
+    }  
+      const markup = createGalleryMarkup(hits);
+      galleryCont.insertAdjacentHTML('beforeend', markup);
+      gallery.refresh();
+      // loadMoreBtn.enable(); 
     }
-
-    createGalleryMarkup(hits);
-    gallery.refresh();
-    loadMoreBtn.enable();
-
-  });
+    catch (error) {
+      console.warn(`${error}`);
+    }
 }
 
 loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
