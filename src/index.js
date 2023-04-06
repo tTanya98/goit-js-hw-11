@@ -7,7 +7,6 @@ import NewsApiService from './js/apiservice';
 
 const galleryCont = document.querySelector('.gallery');
 const searchForm = document.querySelector('.search-form');
-// const loadMore = document.querySelector('.load-more');
 const newsApiService = new NewsApiService();
 const gallery = new SimpleLightbox('.gallery a');
 const loadMoreBtn = new LoadMoreBtn({
@@ -19,7 +18,6 @@ const optionsForObserver = {
 };
 const observer = new IntersectionObserver(onEntry, optionsForObserver);
 
-// observer.observe(refs.wrapper);
 searchForm.addEventListener('submit', onSearch);
 loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
 
@@ -30,8 +28,6 @@ function onSearch(e) {
 
   newsApiService.resetLoadedHits();
 newsApiService.resetPage();
-  loadMoreBtn.show();
-  loadMoreBtn.disable();
   clearGelleryContainer();
 
   if (!newsApiService.query) {
@@ -40,18 +36,15 @@ newsApiService.resetPage();
 
   newsApiService.fetchImages().then(({ hits, totalHits }) => {
     if (!hits.length) {
-      setTimeout(() => {
         loadMoreBtn.hide();
-      }, 1_500);
-
       return erorrQuery();
     }
 
-    loadMoreBtn.enable();
     newsApiService.incrementLoadedHits(hits);
     createGalleryMarkup(hits);
     accessQuery(totalHits);
     gallery.refresh();
+    loadMoreBtn.show();
 
     if (hits.length === totalHits) {
       loadMoreBtn.hide();
@@ -83,11 +76,9 @@ function onEntry(entries) {
 }
 
 function onLoadMore() {
-  loadMoreBtn.disable();
 
   newsApiService.fetchImages().then(({ hits, totalHits }) => {
     newsApiService.incrementLoadedHits(hits);
-    loadMoreBtn.enable();
 
     if (totalHits <= newsApiService.loadedHits) {
       loadMoreBtn.hide();
@@ -96,8 +87,11 @@ function onLoadMore() {
 
     createGalleryMarkup(hits);
     gallery.refresh();
+    loadMoreBtn.enable();
+
   });
 }
+
 
 function accessQuery(totalHits) {
   Notify.success(`Hooray! We found ${totalHits} images.`);
