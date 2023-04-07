@@ -40,7 +40,7 @@ newsApiService.resetPage();
       return erorrQuery();
     }
 
-    newsApiService.incrementLoadedHits(hits);
+    // newsApiService.incrementLoadedHits(hits);
     createGalleryMarkup(hits);
     accessQuery(totalHits);
     gallery.refresh();
