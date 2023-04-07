@@ -3,7 +3,7 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import LoadMoreBtn from './js/load-more';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import NewsApiService from './js/apiservice';
+import ImgApiService from './js/apiservice';
 
 const galleryCont = document.querySelector('.gallery');
 const searchForm = document.querySelector('.search-form');
@@ -92,13 +92,15 @@ newsApiService.resetPage();
 //   });
 // }
 
-const onEntry = async function (entries){
+const onEntry = async function (entries, observer){
   entries.forEach(async entry => {
     if (entry.isIntersecting) {
-      newsApiService
-        .fetchImages()
+      // newsApiService
+      //   .fetchImages()
+      // observer.unobserve(entry.target);
+      newsApiService.incrementPage();
         try {
-          const { hits, totalHits } = await newsApiService.getPhotos();
+          const { hits, totalHits } = await newsApiService.fetchImages();
           const markup = createGalleryMarkup(hits);
           galleryCont.insertAdjacentHTML('beforeend', markup);
           newsApiService.incrementLoadedHits(hits);
@@ -116,10 +118,8 @@ const onEntry = async function (entries){
 const observer = new IntersectionObserver(onEntry, optionsForObserver);
 
 const onLoadMore = async () => {
-  // newsApiService.incrementLoadedHits(hits);
+  newsApiService.incrementLoadedHits(hits);
   newsApiService.incrementPage();
-
-
     try {
       const { hits, totalHits } = await newsApiService.fetchImages();
     if (totalHits <= newsApiService.loadedHits) {
@@ -136,7 +136,7 @@ const onLoadMore = async () => {
     }
 }
 
-loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
+loadMoreBtn.addEventListener('click', onLoadMore);
 
 function accessQuery(totalHits) {
   Notify.success(`Hooray! We found ${totalHits} images.`);
@@ -197,4 +197,3 @@ function createGalleryMarkup(images) {
 
   galleryCont.insertAdjacentHTML('beforeend', markup);
 }
-
