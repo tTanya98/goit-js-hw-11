@@ -1,5 +1,6 @@
 import './sass/index.scss';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import LoadMoreBtn from './js/load-more';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import NewsApiService from './js/apiservice';
