@@ -136,7 +136,7 @@ const onLoadMore = async () => {
     }
 }
 
-loadMoreBtn.addEventListener('click', onLoadMore);
+loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
 
 function accessQuery(totalHits) {
   Notify.success(`Hooray! We found ${totalHits} images.`);
