@@ -26,7 +26,7 @@ searchForm.addEventListener('submit', onSearch);
 function onSearch(e) {
   e.preventDefault();
   newsApiService.query = e.currentTarget.elements.searchQuery.value.trim();
-  newsApiService.resetLoadedHits();
+  // newsApiService.resetLoadedHits();
 newsApiService.resetPage();
   clearGelleryContainer();
 
