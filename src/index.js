@@ -1,6 +1,5 @@
 import './sass/index.scss';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import LoadMoreBtn from './js/load-more';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import NewsApiService from './js/apiservice';
@@ -118,7 +117,7 @@ const onEntry = async function (entries, observer){
 const observer = new IntersectionObserver(onEntry, optionsForObserver);
 
 const onLoadMore = async () => {
-  newsApiService.incrementLoadedHits(hits);
+  // newsApiService.incrementLoadedHits(hits);
   newsApiService.incrementPage();
     try {
       const { hits, totalHits } = await newsApiService.fetchImages();
@@ -197,4 +196,3 @@ function createGalleryMarkup(images) {
 
   galleryCont.insertAdjacentHTML('beforeend', markup);
 }
-
