@@ -3,7 +3,7 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import LoadMoreBtn from './js/load-more';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import ImgApiService from './js/apiservice';
+import NewsApiService from './js/apiservice';
 
 const galleryCont = document.querySelector('.gallery');
 const searchForm = document.querySelector('.search-form');
