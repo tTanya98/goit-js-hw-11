@@ -3,7 +3,7 @@ import axios from 'axios';
 const BASE_URL = 'https://pixabay.com/api/';
 // const API_KEY = '34997553-a7b2d36a26db158f740bb35fd';
 
-export class PixabayApiImages {
+export class NewsApiImages {
   constructor() {
     this.searchQuery = '';
     this.page = 1;
