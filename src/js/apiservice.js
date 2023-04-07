@@ -63,7 +63,7 @@ export default class NewsApiService {
     this.page = 1;
     this.PER_PAGE = 40;
   }
-  async fetchGallery() {
+  async fetchImages() {
     const axiosOptions = {
       method: 'get',
       url: 'https://pixabay.com/api/',
