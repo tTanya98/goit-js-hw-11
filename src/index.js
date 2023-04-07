@@ -95,8 +95,8 @@ newsApiService.resetPage();
 const onEntry = async function (entries, observer){
   entries.forEach(async entry => {
     if (entry.isIntersecting) {
-      // newsApiService
-      //   .fetchImages()
+      newsApiService
+        .fetchImages()
       // observer.unobserve(entry.target);
       newsApiService.incrementPage();
         try {
@@ -197,3 +197,4 @@ function createGalleryMarkup(images) {
 
   galleryCont.insertAdjacentHTML('beforeend', markup);
 }
+
