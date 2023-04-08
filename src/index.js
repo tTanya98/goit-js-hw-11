@@ -1,292 +1,202 @@
 // import './sass/index.scss';
-// import { Notify } from 'notiflix/build/notiflix-notify-aio';
-// import LoadMoreBtn from './js/load-more';
+// import { fetchImages } from './js/fetch-images';
+// import { renderGallery } from './js/render-gallery';
+// import { onScroll, onToTopBtn } from './js/scroll';
+// import Notiflix from 'notiflix';
 // import SimpleLightbox from 'simplelightbox';
+
 // import 'simplelightbox/dist/simple-lightbox.min.css';
-// import NewsApiService from './js/apiservice';
 
-// const galleryCont = document.querySelector('.gallery');
-// const searchForm = document.querySelector('.search-form');
-// const newsApiService = new NewsApiService();
-// const gallery = new SimpleLightbox('.gallery a');
-// const loadMoreBtn = new LoadMoreBtn({
-//   selector: '.load-more',
-//   hidden: true,
-// });
-// const optionsForObserver = {
-//   rootMargin: '250px',
-//   root: null,
-//   threshold: 0.5,
-// };
-// // const observer = new IntersectionObserver(onEntry, optionsForObserver);
+// const searchForm = document.querySelector('#search-form');
+// const gallery = document.querySelector('.gallery');
+// const loadMoreBtn = document.querySelector('.btn-load-more');
+// let query = '';
+// let page = 1;
+// let simpleLightBox;
+// const perPage = 40;
 
-// searchForm.addEventListener('submit', onSearch);
-// // loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
+// searchForm.addEventListener('submit', onSearchForm);
+// loadMoreBtn.addEventListener('click', onLoadMoreBtn);
+// onScroll();
+// onToTopBtn();
 
-// function onSearch(e) {
+// function onSearchForm(e) {
 //   e.preventDefault();
-//   newsApiService.query = e.currentTarget.elements.searchQuery.value.trim();
-//   // newsApiService.resetLoadedHits();
-// newsApiService.resetPage();
-//   clearGelleryContainer();
+//   window.scrollTo({ top: 0 });
+//   page = 1;
+//   query = e.currentTarget.searchQuery.value.trim();
+//   gallery.innerHTML = '';
+//   loadMoreBtn.classList.add('is-hidden');
 
-//   if (!newsApiService.query) {
-//     return warningQuery();
+//   if (query === '') {
+//     alertNoEmptySearch();
+//     return;
 //   }
 
-//   newsApiService.getImages().then(({ hits, totalHits }) => {
-//     if (!hits.length) {
-//         loadMoreBtn.hide();
-//       return erorrQuery();
-//     }
+//   fetchImages(query, page, perPage)
+//     .then(({ data }) => {
+//       if (data.totalHits === 0) {
+//         alertNoImagesFound();
+//       } else {
+//         renderGallery(data.hits);
+//         simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+//         alertImagesFound(data);
 
-//     // newsApiService.incrementLoadedHits(hits);
-//     createGalleryMarkup(hits);
-//     accessQuery(totalHits);
-//     gallery.refresh();
-//     loadMoreBtn.show();
-
-//     if (hits.length === totalHits) {
-//       loadMoreBtn.hide();
-//       endOfSearch();
-//     }
-//   });
-
-// }
-
-// // function onEntry(entries) {
-// //   entries.forEach(entry => {
-// //     if (entry.isIntersecting && newsApiService.query) {
-// //       newsApiService
-// //         .fetchImages()
-// //         .then(({ hits, totalHits }) => {
-// //           newsApiService.incrementLoadedHits(hits);
-// //           if (totalHits <= newsApiService.loadedHits) {
-// //             endOfSearch();
-// //           }
-
-// //           createGalleryMarkup(hits);
-// //           gallery.refresh();
-// //         })
-// //         .catch(error => {
-// //           console.warn(`${error}`);
-// //         });
-// //     }
-// //   });
-// // }
-
-// // function onLoadMore() {
-
-// //   newsApiService.fetchImages().then(({ hits, totalHits }) => {
-// //     newsApiService.incrementLoadedHits(hits);
-
-// //     if (totalHits <= newsApiService.loadedHits) {
-// //       loadMoreBtn.hide();
-// //       endOfSearch();
-// //     }
-
-// //     createGalleryMarkup(hits);
-// //     gallery.refresh();
-// //     loadMoreBtn.enable();
-
-// //   });
-// // }
-
-// const onEntry = async function (entries, observer){
-//   entries.forEach(async entry => {
-//     if (entry.isIntersecting) {
-//       newsApiService
-//         .getImages()
-//       // observer.unobserve(entry.target);
-//       newsApiService.incrementPage();
-//         try {
-//           const { hits, totalHits } = await newsApiService.getImages();
-//           const markup = createGalleryMarkup(hits);
-//           galleryCont.insertAdjacentHTML('beforeend', markup);
-//           newsApiService.incrementLoadedHits(hits);
-//           if (totalHits <= newsApiService.loadedHits) {
-//             endOfSearch();
-//           }
-//           gallery.refresh();
+//         if (data.totalHits > perPage) {
+//           loadMoreBtn.classList.remove('is-hidden');
 //         }
-//         catch (error) {
-//           console.warn(`${error}`);
-//         }
-//     }
-//   });
-// } 
-// const observer = new IntersectionObserver(onEntry, optionsForObserver);
-
-// const onLoadMore = async () => {
-//   // newsApiService.incrementLoadedHits(hits);
-//   newsApiService.incrementPage();
-//     try {
-//       const { hits, totalHits } = await newsApiService.getImages();
-//     if (totalHits <= newsApiService.loadedHits) {
-//       loadMoreBtn.hide();
-//       endOfSearch();
-//     }  
-//       const markup = createGalleryMarkup(hits);
-//       galleryCont.insertAdjacentHTML('beforeend', markup);
-//       gallery.refresh();
-//       // loadMoreBtn.enable(); 
-//     }
-//     catch (error) {
-//       console.warn(`${error}`);
-//     }
-// }
-
-// loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
-
-// function accessQuery(totalHits) {
-//   Notify.success(`Hooray! We found ${totalHits} images.`);
-// }
-
-// function endOfSearch() {
-//   Notify.info("We're sorry, but you've reached the end of search results.");
-// }
-// function warningQuery() {
-//   Notify.warning('Please, fill the main field!!');
-// }
-
-// function erorrQuery() {
-//   Notify.failure('Sorry, there are no images matching your search query. Please try again.');
-// }
-
-// function clearGelleryContainer() {
-//  galleryCont.innerHTML = '';
-// }
-
-// function createGalleryMarkup(images) {
-//   const markup = images
-//     .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
-//       return `
-//     <div class="photo-card">
-//       <a href="${webformatURL}">
-//         <img
-//           class="photo-card__img"
-//           src="${largeImageURL}" 
-//           alt="${tags}" 
-//           loading="lazy" 
-//           width="320"
-//           height="212"
-//         />
-//       </a>
-//       <div class="info">
-//         <p class="info-item">
-//           <b>Likes</b>
-//           <span>${likes}</span>
-//         </p>
-//         <p class="info-item">
-//           <b>Views</b>
-//           <span>${views}</span>
-//         </p>
-//         <p class="info-item">
-//           <b>Comments</b>
-//           <span>${comments}</span>
-//         </p>
-//         <p class="info-item">
-//           <b>Downloads</b>
-//           <span>${downloads}</span>
-//         </p>
-//       </div>
-//     </div>
-//     `;
+//       }
 //     })
-//     .join('');
-
-//   galleryCont.insertAdjacentHTML('beforeend', markup);
+//     .catch(error => console.log(error))
+//     .finally(() => {
+//       searchForm.reset();
+//     });
 // }
 
-import './sass/index.scss';
-import { fetchImages } from './js/fetch-images';
-import { renderGallery } from './js/render-gallery';
-import { onScroll, onToTopBtn } from './js/scroll';
-import Notiflix from 'notiflix';
-import SimpleLightbox from 'simplelightbox';
+// function onLoadMoreBtn() {
+//   page += 1;
+//   simpleLightBox.destroy();
 
-import 'simplelightbox/dist/simple-lightbox.min.css';
+//   fetchImages(query, page, perPage)
+//     .then(({ data }) => {
+//       renderGallery(data.hits);
+//       simpleLightBox = new SimpleLightbox('.gallery a').refresh();
 
-const searchForm = document.querySelector('#search-form');
-const gallery = document.querySelector('.gallery');
-const loadMoreBtn = document.querySelector('.btn-load-more');
-let query = '';
-let page = 1;
-let simpleLightBox;
-const perPage = 40;
+//       const totalPages = Math.ceil(data.totalHits / perPage);
 
-searchForm.addEventListener('submit', onSearchForm);
-loadMoreBtn.addEventListener('click', onLoadMoreBtn);
+//       if (page > totalPages) {
+//         loadMoreBtn.classList.add('is-hidden');
+//         alertEndOfSearch();
+//       }
+//     })
+//     .catch(error => console.log(error));
+// }
 
-onScroll();
-onToTopBtn();
+// function alertImagesFound(data) {
+//   Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+// }
 
-function onSearchForm(e) {
-  e.preventDefault();
-  window.scrollTo({ top: 0 });
-  page = 1;
-  query = e.currentTarget.searchQuery.value.trim();
-  gallery.innerHTML = '';
-  loadMoreBtn.classList.add('is-hidden');
+// function alertNoEmptySearch() {
+//   Notiflix.Notify.failure('The search string cannot be empty. Please specify your search query.');
+// }
 
-  if (query === '') {
-    alertNoEmptySearch();
-    return;
-  }
+// function alertNoImagesFound() {
+//   Notiflix.Notify.failure(
+//     'Sorry, there are no images matching your search query. Please try again.',
+//   );
+// }
 
-  fetchImages(query, page, perPage)
-    .then(({ data }) => {
-      if (data.totalHits === 0) {
-        alertNoImagesFound();
-      } else {
-        renderGallery(data.hits);
-        simpleLightBox = new SimpleLightbox('.gallery a').refresh();
-        alertImagesFound(data);
+// function alertEndOfSearch() {
+//   Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
+// }
+import Notiflix from "notiflix";
+import { PixabayAPI } from "./js/fetch-images";
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
-        if (data.totalHits > perPage) {
-          loadMoreBtn.classList.remove('is-hidden');
+const galleryLightBox = new SimpleLightbox(`.gallery a`);
+const pixabayAPI = new PixabayAPI();
+
+const perPage = pixabayAPI.perPage;
+
+const formEl = document.querySelector(`#search-form`);
+const galleryEl = document.querySelector(`.gallery`);
+const loadMoreEl = document.querySelector(`.load-more`);
+const divSearchEl = document.querySelector(`.search`);
+
+formEl.addEventListener(`submit`, handleSearchPhotos);
+loadMoreEl.addEventListener(`click`, handleLoadMoreEls);
+
+async function handleSearchPhotos(e) {
+    e.preventDefault();
+
+    pixabayAPI.q = e.target.elements.searchQuery.value.trim();
+
+    if (!pixabayAPI.q) {
+        Notiflix.Notify.warning(`The field cannot be empty. Please enter a search query`);
+        return
+    }
+    
+    divSearchEl.classList.add(`search-fixed`)
+    pixabayAPI.page = 1;
+
+    try {
+        const { data } = await pixabayAPI.fetchPhotos();         
+        const totalPage = Math.ceil(data.totalHits / perPage);
+        if (!data.hits.length) {
+            galleryEl.innerHTML = '';
+            throw new Error()
+
+        } else if (totalPage === pixabayAPI.page) {
+            Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images`)
+            galleryEl.innerHTML = renderingGallery(data.hits);
+            galleryLightBox.refresh();
+            loadMoreEl.classList.add("is-hiden");
+            return
         }
-      }
-    })
-    .catch(error => console.log(error))
-    .finally(() => {
-      searchForm.reset();
-    });
+    
+        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images`)
+        galleryEl.innerHTML = renderingGallery(data.hits);
+        loadMoreEl.classList.remove("is-hiden")
+        galleryLightBox.refresh();
+    }
+
+        catch (error) {
+        loadMoreEl.classList.add("is-hiden");
+        Notiflix.Notify.failure(`Sorry, there are no images matching your search query. Please try again`);
+    };
 }
 
-function onLoadMoreBtn() {
-  page += 1;
-  simpleLightBox.destroy();
+async function handleLoadMoreEls(e) {
 
-  fetchImages(query, page, perPage)
-    .then(({ data }) => {
-      renderGallery(data.hits);
-      simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+    pixabayAPI.page += 1;
 
-      const totalPages = Math.ceil(data.totalHits / perPage);
+    try {
+        const { data } = await pixabayAPI.fetchPhotos();
+        const totalPage = Math.ceil(data.totalHits / perPage);
+        if (totalPage === pixabayAPI.page) {
+            galleryEl.insertAdjacentHTML(`beforeend`, renderingGallery(data.hits));
+            loadMoreEl.classList.add("is-hiden");
+            throw new Error();
+        }
+        
+        galleryEl.insertAdjacentHTML(`beforeend`, renderingGallery(data.hits));
+        galleryLightBox.refresh();
 
-      if (page > totalPages) {
-        loadMoreBtn.classList.add('is-hidden');
-        alertEndOfSearch();
-      }
-    })
-    .catch(error => console.log(error));
+        const { height: cardHeight } = document
+        .querySelector(".gallery")
+        .firstElementChild.getBoundingClientRect();
+
+        window.scrollBy({
+        top: cardHeight * 2,
+        behavior: "smooth",
+});
+        
+    } catch (error) {
+        Notiflix.Notify.failure(`We're sorry, but you've reached the end of search results`);
+    }
 }
 
-function alertImagesFound(data) {
-  Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-}
-
-function alertNoEmptySearch() {
-  Notiflix.Notify.failure('The search string cannot be empty. Please specify your search query.');
-}
-
-function alertNoImagesFound() {
-  Notiflix.Notify.failure(
-    'Sorry, there are no images matching your search query. Please try again.',
-  );
-}
-
-function alertEndOfSearch() {
-  Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
+function renderingGallery(img) {
+    return img.map(({ webformatURL, tags, likes, views, comments, downloads, largeImageURL, }) => `
+    <a class="gallery__link" href="${largeImageURL}">
+        <div class="photo-card">
+            <img src="${webformatURL}" "alt="${tags}" loading="lazy" class="gallery__image"/>
+        
+        <div class="info">
+            <p class="info-item">
+                <b class="info-item__statistic">❤️ ${likes}</b>
+            </p>
+            <p class="info-item">
+                <b class="info-item__statistic">👀 ${views}</b>
+            </p>
+            <p class="info-item">
+                <b class="info-item__statistic">💬 ${comments}</b>
+            </p>
+            <p class="info-item">
+                <b class="info-item__statistic">💾 ${downloads}</b>
+            </p>
+        </div>
+        </div>
+    </a>`).join('');
 }
