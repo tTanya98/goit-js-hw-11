@@ -96,11 +96,11 @@ const onEntry = async function (entries, observer){
   entries.forEach(async entry => {
     if (entry.isIntersecting) {
       newsApiService
-        .fetchImages()
+        .getImages()
       // observer.unobserve(entry.target);
       newsApiService.incrementPage();
         try {
-          const { hits, totalHits } = await newsApiService.fetchImages();
+          const { hits, totalHits } = await newsApiService.getImages();
           const markup = createGalleryMarkup(hits);
           galleryCont.insertAdjacentHTML('beforeend', markup);
           newsApiService.incrementLoadedHits(hits);
@@ -121,7 +121,7 @@ const onLoadMore = async () => {
   // newsApiService.incrementLoadedHits(hits);
   newsApiService.incrementPage();
     try {
-      const { hits, totalHits } = await newsApiService.fetchImages();
+      const { hits, totalHits } = await newsApiService.getImages();
     if (totalHits <= newsApiService.loadedHits) {
       loadMoreBtn.hide();
       endOfSearch();
