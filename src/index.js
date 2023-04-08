@@ -34,7 +34,7 @@ newsApiService.resetPage();
     return warningQuery();
   }
 
-  newsApiService.fetchImages().then(({ hits, totalHits }) => {
+  newsApiService.getImages().then(({ hits, totalHits }) => {
     if (!hits.length) {
         loadMoreBtn.hide();
       return erorrQuery();
